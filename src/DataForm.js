@@ -40,7 +40,7 @@ const DataForm = () => {
     if (!formData.favoriteFood) {
       newErrors.favoriteFood = 'Favorite food is required';
     }
-    if (!formData.interestingFact) { // Validation for the new field
+    if (!formData.interestingFact) { 
       newErrors.interestingFact = 'Please share an interesting fact about yourself';
     }
 
@@ -63,7 +63,7 @@ const DataForm = () => {
         semester: '',
         favoriteColor: '',
         favoriteFood: '',
-        interestingFact: '', // Reset new field
+        interestingFact: '', 
       });
       setErrors({});
     }

@@ -1,6 +1,6 @@
 // src/Login.js
 import React, { useState } from 'react';
-import './Login.css'; // Ensure you have the CSS imported
+import './Login.css'; 
 
 const Login = ({ onLogin, setUsername }) => {
   const [username, setLocalUsername] = useState('');
@@ -8,7 +8,6 @@ const Login = ({ onLogin, setUsername }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Replace this with your authentication logic
     if (username == "user" && password == "password") {
       setUsername(username); // Set the username in the parent component
       onLogin();
