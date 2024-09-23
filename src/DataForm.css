@@ -1,0 +1,48 @@
+/* src/DataForm.css */
+.data-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 60px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .data-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .data-form label {
+    display: block;
+    margin-bottom: 0px;
+    margin-top: 30px;
+  }
+  
+  .data-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .data-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .data-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  .error {
+    color: red;
+    font-size: 0.9em;
+  }
+  
