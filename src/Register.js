@@ -1,45 +1,41 @@
 import React, { useState } from 'react';
-import './Login.css';
+import './Register.css';
 
-const Login = ({ onLogin, setUsername }) => {
-  const [username, setLocalUsername] = useState('');
+const Register = ({ onRegister }) => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', 
         body: JSON.stringify({ username, password }),
       });
 
       if (response.ok) {
-        const data = await response.json(); // Assuming the response includes the token
-        localStorage.setItem('token', data.token); // Store the token in localStorage
-        console.log('Token stored:', data.token);
-        setUsername(username); // Set the username in the parent component
-        onLogin(); // Call the onLogin function to handle successful login
+        alert('User registered successfully');
+        onRegister(); // Optionally, redirect or update state
       } else {
-        alert('Invalid credentials');
+        alert('Registration failed');
       }
     } catch (error) {
-      console.error('Error during login:', error);
+      console.error('Error during registration:', error);
       alert('An error occurred. Please try again.');
     }
   };
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
-      <h2>Login</h2>
+    <form className="register-form" onSubmit={handleSubmit}>
+      <h2>Register</h2>
       <div>
         <label>
           Username:
           <input
             type="text"
             value={username}
-            onChange={(e) => setLocalUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </label>
@@ -55,9 +51,9 @@ const Login = ({ onLogin, setUsername }) => {
           />
         </label>
       </div>
-      <button type="submit">Login</button>
+      <button type="submit">Register</button>
     </form>
   );
 };
 
-export default Login;
+export default Register;

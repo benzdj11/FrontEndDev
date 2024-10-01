@@ -1,6 +1,5 @@
-// src/DataForm.js
-import React, { useState } from 'react';
-import './DataForm.css'; // Ensure you have the CSS imported
+import React, { useState, useEffect } from 'react';
+import './DataForm.css';
 
 const DataForm = () => {
   const [formData, setFormData] = useState({
@@ -11,10 +10,36 @@ const DataForm = () => {
     semester: '',
     favoriteColor: '',
     favoriteFood: '',
-    interestingFact: '', // New field
+    interestingFact: '',
   });
-  
+
   const [errors, setErrors] = useState({});
+  const [userDataId, setUserDataId] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('http://localhost:5000/api/user/data', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.ok) {
+        const userDataArray = await response.json();
+        if (userDataArray.length > 0) {
+          setFormData(userDataArray[0]); // Set the first entry in the array
+          setUserDataId(userDataArray[0]._id); // Set the user data ID for updates and deletion
+        }
+      } else {
+        console.error('Error fetching user data:', await response.json());
+      }
+    };
+  
+    // Only fetch data if the user is logged in
+    if (localStorage.getItem('token')) {
+      fetchData();
+    }
+  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -48,24 +73,67 @@ const DataForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      // Handle successful form submission
-      console.log('Form submitted:', formData);
-      alert('Form submitted successfully!');
-      // Reset form
-      setFormData({
-        age: '',
-        phone: '',
-        address: '',
-        course: '',
-        semester: '',
-        favoriteColor: '',
-        favoriteFood: '',
-        interestingFact: '', 
-      });
-      setErrors({});
+      try {
+        const method = userDataId ? 'PUT' : 'POST';
+        const response = await fetch(`http://localhost:5000/api/user/data${userDataId ? `/${userDataId}` : ''}`, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          alert('Data saved successfully!');
+          if (!userDataId) setUserDataId(result.data._id); // Update ID if new entry
+        } else {
+          const error = await response.json();
+          alert('Error: ' + error.message);
+          console.error('Error submitting form:', error);
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('An error occurred. Please try again.');
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete your data?')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/user/data/${userDataId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          alert('User data deleted successfully!');
+          setFormData({
+            age: '',
+            phone: '',
+            address: '',
+            course: '',
+            semester: '',
+            favoriteColor: '',
+            favoriteFood: '',
+            interestingFact: '',
+          });
+          setUserDataId(null); // Clear ID after deletion
+        } else {
+          const errorData = await response.json();
+          alert(`Error: ${errorData.message}`);
+        }
+      } catch (error) {
+        console.error('Error deleting user data:', error);
+        alert('An error occurred. Please try again.');
+      }
     }
   };
 
@@ -75,6 +143,11 @@ const DataForm = () => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove token from localStorage
+    window.location.href = '/'; // Redirect to the login screen
   };
 
   return (
@@ -95,6 +168,8 @@ const DataForm = () => {
         </div>
       ))}
       <button type="submit">Submit</button>
+      <button type="button" onClick={handleDelete}>Delete Data</button>
+      <button type="button" onClick={handleLogout}>Return to Login</button>
     </form>
   );
 };
